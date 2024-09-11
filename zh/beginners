@@ -1,3 +1,4 @@
+知识点1：
 void(*g_defaultGflagsExitFunc)(int) = nullptr;  这个代码是啥意思？
 
 这段代码定义了一个函数指针，并将其初始化为 nullptr。让我们逐步解析这段代码：
@@ -32,3 +33,33 @@ if (g_defaultGflagsExitFunc != nullptr) {
 }
 
 这样，你就可以通过 g_defaultGflagsExitFunc 来调用 myExitFunction，并且在不需要时将其设置为 nullptr 来表示没有函数需要调用。
+
+
+知识点2：
+
+g_appName = std::move(appName);  解释这个代码
+
+这段代码使用了 std::move 将 appName 的资源移动到 g_appName。让我们逐步解析这段代码：
+
+std::move：
+std::move 是 C++11 引入的一个标准库函数，用于将一个对象转换为右值引用（rvalue reference）。
+右值引用允许对象的资源被“移动”而不是复制，从而提高性能，特别是在处理大型对象或资源时。
+g_appName = std::move(appName);：
+g_appName 是一个变量，可能是一个字符串或其他支持移动语义的类型。
+appName 是另一个变量，类型与 g_appName 相同。
+std::move(appName) 将 appName 转换为右值引用，表示其资源可以被移动。
+赋值操作 g_appName = std::move(appName); 将 appName 的资源移动到 g_appName，而不是复制。这意味着 g_appName 将接管 appName 的资源，而 appName 将被置于一个有效但未指定的状态123。
+示例
+假设 g_appName 和 appName 是 std::string 类型：
+
+std::string g_appName;
+std::string appName = "ExampleApp";
+
+g_appName = std::move(appName);
+
+在这段代码执行后：
+
+g_appName 将包含 "ExampleApp"。
+appName 将变为空字符串，因为它的资源已经被移动到 g_appName。
+优点
+使用 std::move 可以避免不必要的深度拷贝，提高程序的性能，特别是在处理大型对象时。
