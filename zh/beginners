@@ -36,7 +36,6 @@ if (g_defaultGflagsExitFunc != nullptr) {
 
 
 知识点2：
-
 g_appName = std::move(appName);  解释这个代码
 
 这段代码使用了 std::move 将 appName 的资源移动到 g_appName。让我们逐步解析这段代码：
