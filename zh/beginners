@@ -1,9 +1,5 @@
 void(*g_defaultGflagsExitFunc)(int) = nullptr;  这个代码是啥意思？
 
-Copilot
-正在为你生成答案…
-
-由 Copilot 发送:
 这段代码定义了一个函数指针，并将其初始化为 nullptr。让我们逐步解析这段代码：
 
 函数指针声明：
