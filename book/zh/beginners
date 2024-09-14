@@ -1,4 +1,4 @@
-知识点1：
+# 知识点1：
 void(*g_defaultGflagsExitFunc)(int) = nullptr;  这个代码是啥意思？
 
 这段代码定义了一个函数指针，并将其初始化为 nullptr。让我们逐步解析这段代码：
@@ -79,7 +79,7 @@ appName 将变为空字符串，因为它的资源已经被移动到 g_appName�
 在你的代码中，::ads::common::Singleton<Ad***Service> 表示 Singleton 类定义在 ads::common 命名空间中，并且你希望使用这个命名空间中的 Singleton 类模板来创建 Ad***Service 的单例。
 
 
-### 删除复制构造函数与重载复制操作符，确保对象不会被拷贝和移动
+# 删除复制构造函数与重载复制操作符，确保对象不会被拷贝和移动
 #define DECLARE_UNCOPYABLE(Class) \
 private: \
     Class(const Class&) = delete; \
