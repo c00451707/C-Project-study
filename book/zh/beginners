@@ -77,3 +77,39 @@ appName 将变为空字符串，因为它的资源已经被移动到 g_appName�
 类的成员：
 :: 也可以用于访问类的静态成员或嵌套类。例如，ClassName::StaticMember。
 在你的代码中，::ads::common::Singleton<Ad***Service> 表示 Singleton 类定义在 ads::common 命名空间中，并且你希望使用这个命名空间中的 Singleton 类模板来创建 Ad***Service 的单例。
+
+
+### 删除复制构造函数与重载复制操作符，确保对象不会被拷贝和移动
+#define DECLARE_UNCOPYABLE(Class) \
+private: \
+    Class(const Class&) = delete; \
+    Class(Class&&) = delete; \
+    Class& operator = (const Class&) = delete; \
+    Class& operator = (Class&&) = delete;  这段代码是啥意思？
+
+这段代码定义了一个宏 DECLARE_UNCOPYABLE，用于防止类的拷贝和移动操作。让我们逐行解析这段代码的含义：
+
+宏定义：
+#define DECLARE_UNCOPYABLE(Class) 定义了一个名为 DECLARE_UNCOPYABLE 的宏，接受一个参数 Class。
+私有化拷贝构造函数和移动构造函数：
+private: 关键字将以下成员函数声明为私有，防止外部代码访问。
+Class(const Class&) = delete; 删除拷贝构造函数，防止类的拷贝。
+Class(Class&&) = delete; 删除移动构造函数，防止类的移动。
+私有化拷贝赋值运算符和移动赋值运算符：
+Class& operator = (const Class&) = delete; 删除拷贝赋值运算符，防止类的拷贝赋值。
+Class& operator = (Class&&) = delete; 删除移动赋值运算符，防止类的移动赋值。
+动机
+使用这个宏的动机是确保类的实例不能被拷贝或移动，从而避免潜在的资源管理问题或不期望的行为。这在需要严格控制对象生命周期的场景中特别有用，例如单例模式或管理资源的类。
+
+示例
+以下是如何在类中使用这个宏的示例：
+
+class MyClass {
+    DECLARE_UNCOPYABLE(MyClass)
+
+public:
+    MyClass() {}
+    ~MyClass() {}
+};
+
+在这个示例中，MyClass 类通过 DECLARE_UNCOPYABLE 宏删除了拷贝和移动操作，从而确保 MyClass 的实例不能被拷贝或移动。
