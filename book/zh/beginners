@@ -62,3 +62,18 @@ g_appName 将包含 "ExampleApp"。
 appName 将变为空字符串，因为它的资源已经被移动到 g_appName。
 优点
 使用 std::move 可以避免不必要的深度拷贝，提高程序的性能，特别是在处理大型对象时。
+
+知识点三：
+::ads::common::Singleton<Ad***Service> 代码中 :: 的作用？
+
+由 Copilot 发送:
+在 C++ 中，:: 是作用域解析运算符（scope resolution operator），用于指定命名空间或类的作用域。具体来说：
+
+全局命名空间：
+当 :: 出现在最前面时（例如 ::ads::common::Singleton），它表示全局命名空间，确保从全局命名空间开始查找符号。这在避免命名冲突时非常有用。
+命名空间：
+在 ::ads::common::Singleton 中，ads 和 common 是命名空间，Singleton 是 common 命名空间中的一个类或模板类。
+:: 用于逐级访问命名空间中的成员。
+类的成员：
+:: 也可以用于访问类的静态成员或嵌套类。例如，ClassName::StaticMember。
+在你的代码中，::ads::common::Singleton<Ad***Service> 表示 Singleton 类定义在 ads::common 命名空间中，并且你希望使用这个命名空间中的 Singleton 类模板来创建 Ad***Service 的单例。
