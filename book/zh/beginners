@@ -1,4 +1,4 @@
-# 知识点1：
+- 知识点1：
 void(*g_defaultGflagsExitFunc)(int) = nullptr;  这个代码是啥意思？
 
 这段代码定义了一个函数指针，并将其初始化为 nullptr。让我们逐步解析这段代码：
@@ -35,7 +35,7 @@ if (g_defaultGflagsExitFunc != nullptr) {
 这样，你就可以通过 g_defaultGflagsExitFunc 来调用 myExitFunction，并且在不需要时将其设置为 nullptr 来表示没有函数需要调用。
 
 
-# 知识点2：
+- 知识点2：
 g_appName = std::move(appName);  解释这个代码
 
 这段代码使用了 std::move 将 appName 的资源移动到 g_appName。让我们逐步解析这段代码：
@@ -63,7 +63,7 @@ appName 将变为空字符串，因为它的资源已经被移动到 g_appName�
 优点
 使用 std::move 可以避免不必要的深度拷贝，提高程序的性能，特别是在处理大型对象时。
 
-# 知识点三：
+- 知识点三：
 ::ads::common::Singleton<Ad***Service> 代码中 :: 的作用？
 
 由 Copilot 发送:
@@ -79,7 +79,7 @@ appName 将变为空字符串，因为它的资源已经被移动到 g_appName�
 在你的代码中，::ads::common::Singleton<Ad***Service> 表示 Singleton 类定义在 ads::common 命名空间中，并且你希望使用这个命名空间中的 Singleton 类模板来创建 Ad***Service 的单例。
 
 
-# 删除复制构造函数与重载复制操作符，确保对象不会被拷贝和移动
+- 删除复制构造函数与重载复制操作符，确保对象不会被拷贝和移动
 #define DECLARE_UNCOPYABLE(Class) \
 private: \
     Class(const Class&) = delete; \
