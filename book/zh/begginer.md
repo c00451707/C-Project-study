@@ -1,3 +1,5 @@
+# 格式样例
+https://docs.github.com/zh/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax
 # **知识点1：**
 void(*g_defaultGflagsExitFunc)(int) = nullptr;  这个代码是啥意思？
 
@@ -33,7 +35,6 @@ if (g_defaultGflagsExitFunc != nullptr) {
 }
 
 这样，你就可以通过 g_defaultGflagsExitFunc 来调用 myExitFunction，并且在不需要时将其设置为 nullptr 来表示没有函数需要调用。
-
 
 # 知识点2：
 g_appName = std::move(appName);  解释这个代码
