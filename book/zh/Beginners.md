@@ -1,6 +1,6 @@
 # 格式样例
 https://docs.github.com/zh/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax
-# **知识点1：**
+# **函数指针知识点：**
 void(*g_defaultGflagsExitFunc)(int) = nullptr;  这个代码是啥意思？
 
 这段代码定义了一个函数指针，并将其初始化为 nullptr。让我们逐步解析这段代码：
@@ -17,7 +17,7 @@ void：表示函数的返回类型是 void，即没有返回值。
 nullptr 是 C++11 引入的关键字，用于表示空指针。它比传统的 NULL 更加类型安全。
 综合起来，这段代码的意思是：定义一个名为 g_defaultGflagsExitFunc 的函数指针，它指向一个接受 int 参数且没有返回值的函数，并将这个指针初始化为 nullptr，表示当前没有指向任何实际的函数。
 
-示例
+## 调用示例
 假设你有一个函数如下：
 
 void myExitFunction(int code) {
@@ -36,7 +36,7 @@ if (g_defaultGflagsExitFunc != nullptr) {
 
 这样，你就可以通过 g_defaultGflagsExitFunc 来调用 myExitFunction，并且在不需要时将其设置为 nullptr 来表示没有函数需要调用。
 
-# 知识点2：
+# 将对象转换为右值引用：
 g_appName = std::move(appName);  解释这个代码
 
 这段代码使用了 std::move 将 appName 的资源移动到 g_appName。让我们逐步解析这段代码：
@@ -64,7 +64,7 @@ appName 将变为空字符串，因为它的资源已经被移动到 g_appName�
 优点
 使用 std::move 可以避免不必要的深度拷贝，提高程序的性能，特别是在处理大型对象时。
 
-# 知识点三：
+# :: 开头表示全局作用域：
 ::ads::common::Singleton<Ad***Service> 代码中 :: 的作用？
 
 由 Copilot 发送:
