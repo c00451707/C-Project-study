@@ -197,3 +197,27 @@ comIter != adBucketMap.end() 检查是否找到了对应的元素。如果 comIt
 定义一个类型别名 AdBucketInfoMap，表示一个哈希映射容器。
 声明一个常量引用 adBucketMap，引用一个 AdBucketInfoMap 对象。
 在 adBucketMap 中查找键为 AdBucketType::COMMERCIAL 的元素，并检查该元素是否存在。
+
+# find函数含义二
+using ReqAdInfoMap = ::absl::flat_hash_map<uint64_t, ReqAdInfo>;
+ReqAdInfoMap &m_reqAdInfoMap;
+auto adIter = m_reqAdInfoMap.find(adgroupId);
+auto &creativeMap = adIter->second.m_creativeCtxMap;
+
+m_reqAdInfoMap.find(adgroupId) 返回的是一个迭代器，指向 absl::flat_hash_map<uint64_t, ReqAdInfo> 中键为 adgroupId 的元素。具体来说，返回的迭代器类型是 absl::flat_hash_map<uint64_t, ReqAdInfo>::iterator。
+
+这个迭代器是一个指向键值对的指针，键值对的类型是 std::pair<const uint64_t, ReqAdInfo>。你可以通过 adIter->first 访问键，通过 adIter->second 访问值。
+
+例如：
+
+auto adIter = m_reqAdInfoMap.find(adgroupId);
+
+if (adIter != m_reqAdInfoMap.end()) {
+    uint64_t key = adIter->first; // 访问键
+    ReqAdInfo& value = adIter->second; // 访问值
+}
+
+
+在这个例子中，adIter 是一个迭代器，adIter->first 是键，adIter->second 是值。
+
+
