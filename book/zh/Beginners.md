@@ -82,13 +82,14 @@ appName 将变为空字符串，因为它的资源已经被移动到 g_appName�
 
 # 删除复制构造函数与重载复制操作符，确保对象不会被拷贝和移动
 ```
-#define DECLARE_UNCOPYABLE(Class) \
-private: \
-    Class(const Class&) = delete; \
-    Class(Class&&) = delete; \
-    Class& operator = (const Class&) = delete; \
-    Class& operator = (Class&&) = delete;  这段代码是啥意思？
+#define DECLARE_UNCOPYABLE(Class)
+private:
+    Class(const Class&) = delete;
+    Class(Class&&) = delete;
+    Class& operator = (const Class&) = delete;
+    Class& operator = (Class&&) = delete;  
 ```
+这段代码是啥意思？
 这段代码定义了一个宏 DECLARE_UNCOPYABLE，用于防止类的拷贝和移动操作。让我们逐行解析这段代码的含义：
 
 宏定义：
