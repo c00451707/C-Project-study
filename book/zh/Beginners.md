@@ -114,3 +114,17 @@ public:
 };
 
 在这个示例中，MyClass 类通过 DECLARE_UNCOPYABLE 宏删除了拷贝和移动操作，从而确保 MyClass 的实例不能被拷贝或移动。
+
+# C++中的Map对象
+::absl::flat_hash_map<AdBucketType, std::unique_ptr<AdBucketInfo>>;  这个是什么类型？
+
+这行代码定义了一个类型别名，具体来说是一个 absl::flat_hash_map，它是 Google 的 Abseil 库中的一种哈希映射容器。让我们逐步分析：
+
+absl::flat_hash_map:
+这是 Abseil 库提供的一种哈希映射容器，类似于标准库中的 std::unordered_map。它通常具有更好的性能，特别是在内存使用和查找速度方面。
+<AdBucketType, std::unique_ptr<AdBucketInfo>>:
+这是 flat_hash_map 的模板参数，定义了键和值的类型。
+AdBucketType：这是键的类型，表示哈希映射中每个元素的键。
+std::unique_ptr<AdBucketInfo>：这是值的类型，表示哈希映射中每个元素的值。std::unique_ptr 是一种智能指针，负责管理 AdBucketInfo 对象的生命周期，确保在不再需要时自动释放内存。
+总结一下，这行代码定义了一个 flat_hash_map，它将 AdBucketType 类型的键映射到 std::unique_ptr<AdBucketInfo> 类型的值。这种结构通常用于高效地存储和查找与 AdBucketType 相关的 AdBucketInfo 对象，同时确保内存管理的安全性。
+
