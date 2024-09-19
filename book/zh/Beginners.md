@@ -335,3 +335,40 @@ int main() {
 主要特点
 不改变所有权：get 方法不会改变 unique_ptr 的所有权，只是提供对托管对象的访问。
 异常安全：即使在异常情况下，unique_ptr 仍然会正确管理内存。
+
+
+# std::vector 的 emplace_back方法
+std::vector 的 emplace_back 方法是在容器末尾直接构造一个新元素，而不是先创建一个临时对象再将其移动或拷贝到容器中。这样可以避免不必要的拷贝或移动操作，从而提高性能。
+
+### 使用方法
+emplace_back 方法接受可变参数列表，并将这些参数直接传递给新元素的构造函数。以下是一个简单的示例：
+```
+#include <iostream>
+#include <vector>
+
+class MyClass {
+public:
+    MyClass(int x, double y) : x_(x), y_(y) {
+        std::cout << "MyClass constructed with x = " << x_ << " and y = " << y_ << std::endl;
+    }
+private:
+    int x_;
+    double y_;
+};
+
+int main() {
+    std::vector<MyClass> vec;
+    vec.emplace_back(10, 20.5); // 直接在 vector 末尾构造 MyClass 对象
+
+    return 0;
+}
+```
+在这个示例中，emplace_back 方法直接在 vec 的末尾构造了一个 MyClass 对象，传递的参数是 10 和 20.5123.
+
+### 优点
+减少拷贝和移动操作：相比 push_back，emplace_back 可以避免临时对象的创建，从而减少拷贝和移动操作。
+提高性能：在需要频繁插入复杂对象的场景中，emplace_back 可以显著提高性能。
+
+### 适用场景
+构造复杂对象：当插入的对象需要多个参数构造时，emplace_back 可以直接传递构造函数参数。
+性能优化：在性能敏感的应用中，使用 emplace_back 可以减少不必要的开销。
