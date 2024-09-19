@@ -134,3 +134,31 @@ std::unique_ptr<AdBucketInfo>：这是值的类型，表示哈希映射中每个
 
 总结一下，这行代码定义了一个 flat_hash_map，它将 AdBucketType 类型的键映射到 std::unique_ptr<AdBucketInfo> 类型的值。这种结构通常用于高效地存储和查找与 AdBucketType 相关的 AdBucketInfo 对象，同时确保内存管理的安全性。
 
+# C++17 提供的遍历Map对象新特性
+using AdContextMap = ::absl::flat_hash_map<uint64_t, std::unique_ptr<AdContext>>;
+const AdContextMap &adContextMap
+const auto &[adgroupId, adContext] : adContextMap
+
+类型别名声明：
+using AdContextMap = ::absl::flat_hash_map<uint64_t, std::unique_ptr<AdContext>>;
+
+这行代码使用 using 关键字定义了一个类型别名 AdContextMap。
+AdContextMap 是一个 absl::flat_hash_map，它将 uint64_t 类型的键映射到 std::unique_ptr<AdContext> 类型的值。
+常量引用声明：
+const AdContextMap &adContextMap;
+
+这行代码声明了一个常量引用 adContextMap，它引用一个 AdContextMap 类型的对象。
+const 关键字表示 adContextMap 是不可修改的。
+结构化绑定声明：
+const auto &[adgroupId, adContext] : adContextMap;
+
+这行代码使用 C++17 引入的结构化绑定声明来解构 adContextMap 中的元素。
+const auto & 表示绑定的变量是常量引用。
+[adgroupId, adContext] 是解构绑定的变量名，分别对应 adContextMap 中的键和值。
+: adContextMap 表示从 adContextMap 中提取元素。
+总结一下，这段代码的作用是：
+
+定义一个类型别名 AdContextMap，表示一个哈希映射容器。
+声明一个常量引用 adContextMap，引用一个 AdContextMap 对象。
+使用结构化绑定从 adContextMap 中提取键值对，并将键绑定到 adgroupId，将值绑定到 adContext。
+
