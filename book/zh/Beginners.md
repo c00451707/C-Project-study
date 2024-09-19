@@ -19,21 +19,21 @@ nullptr 是 C++11 引入的关键字，用于表示空指针。它比传统的 N
 
 ## 调用示例
 假设你有一个函数如下：
-
+```
 void myExitFunction(int code) {
     // 处理退出逻辑
 }
-
+```
 你可以将 g_defaultGflagsExitFunc 指向这个函数：
-
+```
 g_defaultGflagsExitFunc = myExitFunction;
-
+```
 然后在需要调用这个函数时，可以这样做：
-
+```
 if (g_defaultGflagsExitFunc != nullptr) {
     g_defaultGflagsExitFunc(0); // 调用函数并传递参数
 }
-
+```
 这样，你就可以通过 g_defaultGflagsExitFunc 来调用 myExitFunction，并且在不需要时将其设置为 nullptr 来表示没有函数需要调用。
 
 # 将对象转换为右值引用：
@@ -51,12 +51,12 @@ std::move(appName) 将 appName 转换为右值引用，表示其资源可以被�
 赋值操作 g_appName = std::move(appName); 将 appName 的资源移动到 g_appName，而不是复制。这意味着 g_appName 将接管 appName 的资源，而 appName 将被置于一个有效但未指定的状态123。
 示例
 假设 g_appName 和 appName 是 std::string 类型：
-
+```
 std::string g_appName;
 std::string appName = "ExampleApp";
 
 g_appName = std::move(appName);
-
+```
 在这段代码执行后：
 
 g_appName 将包含 "ExampleApp"。
@@ -81,13 +81,14 @@ appName 将变为空字符串，因为它的资源已经被移动到 g_appName�
 
 
 # 删除复制构造函数与重载复制操作符，确保对象不会被拷贝和移动
+```
 #define DECLARE_UNCOPYABLE(Class) \
 private: \
     Class(const Class&) = delete; \
     Class(Class&&) = delete; \
     Class& operator = (const Class&) = delete; \
     Class& operator = (Class&&) = delete;  这段代码是啥意思？
-
+```
 这段代码定义了一个宏 DECLARE_UNCOPYABLE，用于防止类的拷贝和移动操作。让我们逐行解析这段代码的含义：
 
 宏定义：
@@ -104,7 +105,7 @@ Class& operator = (Class&&) = delete; 删除移动赋值运算符，防止类的
 
 示例
 以下是如何在类中使用这个宏的示例：
-
+```
 class MyClass {
     DECLARE_UNCOPYABLE(MyClass)
 
@@ -112,6 +113,7 @@ public:
     MyClass() {}
     ~MyClass() {}
 };
+```
 
 在这个示例中，MyClass 类通过 DECLARE_UNCOPYABLE 宏删除了拷贝和移动操作，从而确保 MyClass 的实例不能被拷贝或移动。
 
@@ -135,9 +137,11 @@ std::unique_ptr<AdBucketInfo>：这是值的类型，表示哈希映射中每个
 总结一下，这行代码定义了一个 flat_hash_map，它将 AdBucketType 类型的键映射到 std::unique_ptr<AdBucketInfo> 类型的值。这种结构通常用于高效地存储和查找与 AdBucketType 相关的 AdBucketInfo 对象，同时确保内存管理的安全性。
 
 # C++17 提供的遍历Map对象新特性
+```
 using AdContextMap = ::absl::flat_hash_map<uint64_t, std::unique_ptr<AdContext>>;
 const AdContextMap &adContextMap
 const auto &[adgroupId, adContext] : adContextMap
+```
 
 类型别名声明：
 using AdContextMap = ::absl::flat_hash_map<uint64_t, std::unique_ptr<AdContext>>;
@@ -164,16 +168,15 @@ const auto & 表示绑定的变量是常量引用。
 
 # Map对象的find实现原理
 ## find函数用法1
+```
 using AdBucketInfoMap = ::absl::flat_hash_map<AdBucketType, std::unique_ptr<AdBucketInfo>>;
-
 const AdBucketInfoMap &adBucketMap
-
 if (auto comIter = adBucketMap.find(AdBucketType::COMMERCIAL); comIter != adBucketMap.end())
 {
     stament
     ... ...
 }
-
+```
 让我们逐步分析这段代码：
 
 类型别名声明：
@@ -200,24 +203,26 @@ comIter != adBucketMap.end() 检查是否找到了对应的元素。如果 comIt
 在 adBucketMap 中查找键为 AdBucketType::COMMERCIAL 的元素，并检查该元素是否存在。
 
 ## find函数用法2
+```
 using ReqAdInfoMap = ::absl::flat_hash_map<uint64_t, ReqAdInfo>;
 ReqAdInfoMap &m_reqAdInfoMap;
 auto adIter = m_reqAdInfoMap.find(adgroupId);
 auto &creativeMap = adIter->second.m_creativeCtxMap;
+```
 
 m_reqAdInfoMap.find(adgroupId) 返回的是一个迭代器，指向 absl::flat_hash_map<uint64_t, ReqAdInfo> 中键为 adgroupId 的元素。具体来说，返回的迭代器类型是 absl::flat_hash_map<uint64_t, ReqAdInfo>::iterator。
 
 这个迭代器是一个指向键值对的指针，键值对的类型是 std::pair<const uint64_t, ReqAdInfo>。你可以通过 adIter->first 访问键，通过 adIter->second 访问值。
 
 例如：
-
+```
 auto adIter = m_reqAdInfoMap.find(adgroupId);
 
 if (adIter != m_reqAdInfoMap.end()) {
     uint64_t key = adIter->first; // 访问键
     ReqAdInfo& value = adIter->second; // 访问值
 }
-
+```
 
 在这个例子中，adIter 是一个迭代器，adIter->first 是键，adIter->second 是值。
 
