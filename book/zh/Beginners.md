@@ -164,8 +164,14 @@ const auto & 表示绑定的变量是常量引用。
 
 # Map对象的find实现原理
 using AdBucketInfoMap = ::absl::flat_hash_map<AdBucketType, std::unique_ptr<AdBucketInfo>>;
+
 const AdBucketInfoMap &adBucketMap
-auto comIter = adBucketMap.find(AdBucketType::COMMERCIAL); comIter != adBucketMap.end()
+
+if (auto comIter = adBucketMap.find(AdBucketType::COMMERCIAL); comIter != adBucketMap.end())
+{
+    stament
+    ... ...
+}
 
 让我们逐步分析这段代码：
 
