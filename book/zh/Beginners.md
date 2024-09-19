@@ -307,3 +307,31 @@ int main() {
 ```
 在这个示例中，第一次调用 emplace 成功插入了键为 1 的元素，因此 result.second 为 true。第二次调用 emplace 由于键 1 已经存在，插入失败，result.second 为 false.
 
+# std::unique_ptr 智能指针的 get() 方法
+std::unique_ptr 的 get 方法用于获取 unique_ptr 所管理的原始指针，而不会改变 unique_ptr 的所有权。它返回一个指向托管对象的指针，如果 unique_ptr 不管理任何对象，则返回 nullptr。
+
+使用示例
+以下是一个简单的示例，展示如何使用 get 方法：
+```
+#include <iostream>
+#include <memory>
+
+int main() {
+    std::unique_ptr<int> ptr = std::make_unique<int>(42);
+
+    // 使用 get 方法获取原始指针
+    int* rawPtr = ptr.get();
+
+    std::cout << "Value: " << *rawPtr << std::endl;
+
+    // 注意：不要手动删除 rawPtr 指向的对象
+    // delete rawPtr; // 这样做会导致未定义行为
+
+    return 0;
+}
+```
+在这个示例中，ptr.get() 返回一个指向 42 的原始指针 rawPtr。需要注意的是，虽然你可以使用这个原始指针，但你不应该手动删除它，因为 unique_ptr 会在其生命周期结束时自动管理和释放内存123.
+
+主要特点
+不改变所有权：get 方法不会改变 unique_ptr 的所有权，只是提供对托管对象的访问。
+异常安全：即使在异常情况下，unique_ptr 仍然会正确管理内存。
