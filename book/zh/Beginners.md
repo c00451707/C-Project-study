@@ -271,4 +271,39 @@ int main() {
 ```
 在这个示例中，std::make_unique<MyClass>(42) 创建了一个 std::unique_ptr，指向一个 MyClass 对象，并传递 42 给它的构造函数。对象在 myPtr 超出作用域时自动销毁，确保内存安全123。
 
+# Map 的emplace 函数返回
+map 的 emplace 函数返回一个 std::pair，其中包含两个元素：
+
+迭代器：指向新插入的元素，或者指向具有等价键的现有元素。
+布尔值：表示是否成功插入。如果插入成功，则为 true；如果键已经存在且没有插入新元素，则为 false。
+以下是一个示例，展示如何使用 emplace 函数及其返回值：
+```
+#include <iostream>
+#include <map>
+
+int main() {
+    std::map<int, std::string> myMap;
+
+    // 尝试插入一个新元素
+    auto result = myMap.emplace(1, "one");
+
+    if (result.second) {
+        std::cout << "插入成功: " << result.first->first << " => " << result.first->second << std::endl;
+    } else {
+        std::cout << "插入失败，键已存在: " << result.first->first << " => " << result.first->second << std::endl;
+    }
+
+    // 尝试插入一个具有相同键的元素
+    result = myMap.emplace(1, "uno");
+
+    if (result.second) {
+        std::cout << "插入成功: " << result.first->first << " => " << result.first->second << std::endl;
+    } else {
+        std::cout << "插入失败，键已存在: " << result.first->first << " => " << result.first->second << std::endl;
+    }
+
+    return 0;
+}
+```
+在这个示例中，第一次调用 emplace 成功插入了键为 1 的元素，因此 result.second 为 true。第二次调用 emplace 由于键 1 已经存在，插入失败，result.second 为 false.
 
