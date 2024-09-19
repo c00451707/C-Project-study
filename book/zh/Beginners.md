@@ -231,9 +231,11 @@ std::make_unique 是 C++14 引入的一个实用函数，用于创建 std::uniqu
 
 使用方法
 std::make_unique 的基本语法如下：
-```#include <memory>
+```
+#include <memory>
 
-auto ptr = std::make_unique<T>(args...);```
+auto ptr = std::make_unique<T>(args...);
+```
 
 T：要创建的对象类型。
 args…：传递给对象构造函数的参数。
@@ -242,6 +244,7 @@ args…：传递给对象构造函数的参数。
 `#include <iostream>
 #include <memory>
 
+```
 class MyClass {
 public:
     MyClass(int value) : value_(value) {
@@ -259,7 +262,7 @@ int main() {
     // 使用 myPtr 进行操作
     return 0;
 }
-`
+```
 在这个示例中，std::make_unique<MyClass>(42) 创建了一个 std::unique_ptr，指向一个 MyClass 对象，并传递 42 给它的构造函数。对象在 myPtr 超出作用域时自动销毁，确保内存安全123。
 
 
