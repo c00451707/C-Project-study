@@ -221,4 +221,47 @@ if (adIter != m_reqAdInfoMap.end()) {
 
 在这个例子中，adIter 是一个迭代器，adIter->first 是键，adIter->second 是值。
 
+# C++ 14 新增的 make_unique 函数
+std::make_unique 是 C++14 引入的一个实用函数，用于创建 std::unique_ptr 对象。它的主要优点是简化了动态内存分配，并确保内存安全管理，避免内存泄漏和错误。
+
+优点
+异常安全：如果在对象构造过程中抛出异常，std::make_unique 确保不会发生内存泄漏。
+简洁：相比直接使用 new 操作符，代码更简洁明了。
+避免重复代码：减少了手动管理内存的代码量。
+
+使用方法
+std::make_unique 的基本语法如下：
+
+#include <memory>
+
+auto ptr = std::make_unique<T>(args...);
+
+T：要创建的对象类型。
+args…：传递给对象构造函数的参数。
+示例
+以下是一个简单的示例，展示如何使用 std::make_unique：
+
+#include <iostream>
+#include <memory>
+
+class MyClass {
+public:
+    MyClass(int value) : value_(value) {
+        std::cout << "Object Created with value: " << value_ << std::endl;
+    }
+    ~MyClass() {
+        std::cout << "Object Destroyed" << std::endl;
+    }
+private:
+    int value_;
+};
+
+int main() {
+    auto myPtr = std::make_unique<MyClass>(42);
+    // 使用 myPtr 进行操作
+    return 0;
+}
+
+在这个示例中，std::make_unique<MyClass>(42) 创建了一个 std::unique_ptr，指向一个 MyClass 对象，并传递 42 给它的构造函数。对象在 myPtr 超出作用域时自动销毁，确保内存安全123。
+
 
