@@ -162,3 +162,32 @@ const auto & 表示绑定的变量是常量引用。
 声明一个常量引用 adContextMap，引用一个 AdContextMap 对象。
 使用结构化绑定从 adContextMap 中提取键值对，并将键绑定到 adgroupId，将值绑定到 adContext。
 
+# Map对象的find实现原理
+using AdBucketInfoMap = ::absl::flat_hash_map<AdBucketType, std::unique_ptr<AdBucketInfo>>;
+const AdBucketInfoMap &adBucketMap
+auto comIter = adBucketMap.find(AdBucketType::COMMERCIAL); comIter != adBucketMap.end()
+
+让我们逐步分析这段代码：
+
+类型别名声明：
+using AdBucketInfoMap = ::absl::flat_hash_map<AdBucketType, std::unique_ptr<AdBucketInfo>>;
+
+这行代码使用 using 关键字定义了一个类型别名 AdBucketInfoMap。
+AdBucketInfoMap 是一个 absl::flat_hash_map，它将 AdBucketType 类型的键映射到 std::unique_ptr<AdBucketInfo> 类型的值。
+常量引用声明：
+const AdBucketInfoMap &adBucketMap;
+
+这行代码声明了一个常量引用 adBucketMap，它引用一个 AdBucketInfoMap 类型的对象。
+const 关键字表示 adBucketMap 是不可修改的。
+查找元素并检查是否存在：
+auto comIter = adBucketMap.find(AdBucketType::COMMERCIAL);
+comIter != adBucketMap.end();
+
+这两行代码首先使用 find 方法在 adBucketMap 中查找键为 AdBucketType::COMMERCIAL 的元素。
+auto 关键字让编译器自动推断 comIter 的类型，它是一个迭代器，指向找到的元素或 adBucketMap 的 end 迭代器。
+comIter != adBucketMap.end() 检查是否找到了对应的元素。如果 comIter 不等于 adBucketMap.end()，则表示找到了键为 AdBucketType::COMMERCIAL 的元素。
+总结一下，这段代码的作用是：
+
+定义一个类型别名 AdBucketInfoMap，表示一个哈希映射容器。
+声明一个常量引用 adBucketMap，引用一个 AdBucketInfoMap 对象。
+在 adBucketMap 中查找键为 AdBucketType::COMMERCIAL 的元素，并检查该元素是否存在。
