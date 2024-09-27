@@ -373,3 +373,16 @@ int main() {
 构造复杂对象：当插入的对象需要多个参数构造时，emplace_back 可以直接传递构造函数参数。
 
 性能优化：在性能敏感的应用中，使用 emplace_back 可以减少不必要的开销。
+
+# 类型转换 static_cast<uint32_t>(modelType) 
+static_cast<uint32_t>(modelType) 是 C++ 中的一种类型转换操作。它将 modelType 变量转换为 uint32_t 类型。以下是一些详细解释：
+
+类型转换：static_cast 是 C++ 中的四种类型转换操作符之一，其他三种是 dynamic_cast、const_cast 和 reinterpret_cast。static_cast 用于执行编译时类型检查的转换，确保转换是安全的1。
+转换为 uint32_t：uint32_t 是一个无符号 32 位整数类型，通常用于需要明确大小的整数操作。通过 static_cast，你可以将 modelType 转换为这种类型2。
+使用场景：这种转换通常用于需要确保变量类型一致的场景，例如在处理不同类型的枚举值或其他类型的数值时1。
+示例：
+enum class ModelType { TypeA, TypeB, TypeC };
+ModelType modelType = ModelType::TypeA;
+uint32_t modelTypeValue = static_cast<uint32_t>(modelType);
+// 现在 modelTypeValue 是一个无符号 32 位整数，表示 modelType 的数值
+这种转换在编译时进行检查，确保 modelType 可以安全地转换为 uint32_t 类型。
