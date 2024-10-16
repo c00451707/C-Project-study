@@ -391,3 +391,97 @@ uint32_t modelTypeValue = static_cast<uint32_t>(modelType);
 
 // 现在 modelTypeValue 是一个无符号 32 位整数，表示 modelType 的数值
 这种转换在编译时进行检查，确保 modelType 可以安全地转换为 uint32_t 类型。
+
+# Lambda 表达式的高阶使用方法
+Task类声明
+```
+class Task final : public Runnable {
+public:
+    using Callback = std::function<void()>;
+
+    // 调用方保证 closure 不为空
+    explicit Task(::ads::common::Closure<void()> *closure, uint64_t priority = 0)
+        : m_function([closure] { closure->Run(); }),
+          m_priority(priority)
+    {
+    }
+    // 调用方保证 function 不为空
+    template<class Function>
+    explicit Task(Function &&function, uint64_t priority = 0)
+        : m_function(std::forward<Function>(function)),
+          m_priority(priority)
+    {
+    }
+    ~Task() override = default;
+
+    void Run() override
+    {
+        m_function();
+    }
+
+    [[nodiscard]] uint64_t GetPriority() const
+    {
+        return m_priority;
+    }
+
+    Callback ExtractFunc()
+    {
+        return std::move(m_function);
+    }
+
+    bool operator<(const Task &other) const
+    {
+        // m_priority 越小优先级越高
+        return m_priority > other.GetPriority();
+    }
+
+    DECLARE_UNCOPYABLE(Task);
+
+private:
+    Callback m_function;
+
+    // m_priority 越小优先级越高
+    uint64_t m_priority{0};
+};
+```
+使用方法
+```
+        // lambda 表达式，当调用它时，会执行当前对象的 Execute 方法，并传递 task 变量
+        auto exeFunc = [this, task] { this->Execute(task); };
+        /*
+         * exeFunc 赋值给 ::ads::common::Closure<void()> *closure 对象
+         * 当你将 exeFunc 传递给 Closure<void()> 接口时，编译器会隐式地创建一个匿名类来实现 Closure<void()> 接口。这个匿名类会将 exeFunc 的调用逻辑包装到 Run 方法中。
+         */
+        auto exeTask = std::make_unique<dsp::common::Task>(exeFunc, GetTaskPriority(task));
+```
+
+代码解释：
+当你将 exeFunc 传递给 Closure<void()> 接口时，编译器会隐式地创建一个匿名类来实现 Closure<void()> 接口。这个匿名类会将 exeFunc 的调用逻辑包装到 Run 方法中。
+
+实际上，这个过程如下：
+
+捕获 lambda 表达式：创建一个捕获 this 和 task 的 lambda 表达式。
+
+cpp
+
+```
+auto exeFunc = [this, task] { this->Execute(task); };
+传递 lambda 表达式：将 exeFunc 传递给 Task 的构造函数。
+```
+```
+std::make_unique<dsp::common::Task>(exeFunc, 1);
+```
+编译器生成匿名类：编译器会自动生成一个匿名类，实现 Closure<void()> 接口，并将 lambda 表达式的逻辑包装到 Run 方法中。
+
+调用 Run 方法：当 Run 方法被调用时，实际执行的是 exeFunc 内的逻辑，即 this->Execute(task)。
+
+```
+m_function([closure] { closure->Run(); }), 那这个代码片段是啥意思呢？
+```
+这行代码的作用是使用一个 lambda 表达式来初始化 m_function。具体细节如下：
+
+[closure]：这部分捕获列表，表示 lambda 表达式捕获 closure 变量，允许在 lambda 表达式体内使用它。
+
+{ closure->Run(); }：这是 lambda 表达式的主体，表示调用 closure 的 Run 方法。
+
+所以，m_function([closure] { closure->Run(); }) 这段代码的意思是，将一个会调用 closure->Run() 的 lambda 表达式赋值给 m_function。当你以后调用 m_function() 时，它实际上会执行 closure->Run()，相当于间接调用了 closure 的 Run 方法。
