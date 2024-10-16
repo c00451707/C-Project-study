@@ -485,3 +485,48 @@ m_function([closure] { closure->Run(); }), 那这个代码片段是啥意思呢�
 { closure->Run(); }：这是 lambda 表达式的主体，表示调用 closure 的 Run 方法。
 
 所以，m_function([closure] { closure->Run(); }) 这段代码的意思是，将一个会调用 closure->Run() 的 lambda 表达式赋值给 m_function。当你以后调用 m_function() 时，它实际上会执行 closure->Run()，相当于间接调用了 closure 的 Run 方法。
+
+## 讲讲捕获参数的含义，它和传递入参有什么区别，并且给出一个传递入参的样例，方便我理解？
+
+捕获参数和传递入参在 lambda 表达式中的用途有所不同：
+捕获参数：在定义 lambda 表达式时捕获作用域内的变量，这些变量在 lambda 表达式体内可以直接使用。捕获列表包含在方括号 [] 中。
+传递入参：这是函数调用时传递的参数，列在圆括号 () 中，函数体内使用这些传入参数进行操作。
+
+捕获参数示例：
+
+#include <iostream>
+int main() {
+    int x = 10;
+    int y = 20;
+
+    // 捕获 x 和 y
+    auto lambda = [x, y]() {
+        std::cout << "x + y = " << x + y << std::endl;
+    };
+
+    lambda(); // 输出: x + y = 30
+
+    return 0;
+}
+在上面的例子中，lambda 捕获了 x 和 y，在 lambda 表达式体内可以直接使用它们。
+
+传递入参示例：
+
+#include <iostream>
+
+int main() {
+    // 定义一个 lambda，接受两个参数
+    auto lambda = [](int a, int b) {
+        std::cout << "a + b = " << a + b << std::endl;
+    };
+
+    int x = 10;
+    int y = 20;
+    lambda(x, y); // 输出: a + b = 30
+
+    return 0;
+}
+在这个例子中，lambda 是一个接受两个参数 a 和 b 的函数，在调用时传递 x 和 y。
+
+总结来说，捕获参数是在定义时将外部变量引入 lambda 表达式，而传递入参是在调用时将参数传递给 lambda 表达式。希望这个解释能让你更清晰理解这两者的区别！有其他问题要讨论吗？
+
