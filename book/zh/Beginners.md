@@ -493,7 +493,7 @@ m_function([closure] { closure->Run(); }), 那这个代码片段是啥意思呢�
 传递入参：这是函数调用时传递的参数，列在圆括号 () 中，函数体内使用这些传入参数进行操作。
 
 捕获参数示例：
-
+```
 #include <iostream>
 int main() {
     int x = 10;
@@ -508,12 +508,12 @@ int main() {
 
     return 0;
 }
+```
 在上面的例子中，lambda 捕获了 x 和 y，在 lambda 表达式体内可以直接使用它们。
 
 传递入参示例：
-
+```
 #include <iostream>
-
 int main() {
     // 定义一个 lambda，接受两个参数
     auto lambda = [](int a, int b) {
@@ -526,6 +526,7 @@ int main() {
 
     return 0;
 }
+```
 在这个例子中，lambda 是一个接受两个参数 a 和 b 的函数，在调用时传递 x 和 y。
 
 总结来说，捕获参数是在定义时将外部变量引入 lambda 表达式，而传递入参是在调用时将参数传递给 lambda 表达式。希望这个解释能让你更清晰理解这两者的区别！有其他问题要讨论吗？
