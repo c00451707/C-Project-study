@@ -550,7 +550,9 @@ int dereferencedValue = *ptr;  // 通过解引用操作符访问 value
 ```
 
 “int value = 10;” 定义了一个整数类型的变量 value，并初始化为 10。
+
 “int* ptr = &value;” 定义了一个指向整数类型的指针 ptr，并将其初始化为变量 value 的地址，即 ptr 指向了 value。
+
 “int dereferencedValue = ptr;” 通过解引用操作符 “” 访问指针 ptr 所指向的内存地址中的值，并将这个值赋给变量 dereferencedValue。
 
 这种双重功能让 * 在 C++ 中成为一个非常重要且常用的符号。
