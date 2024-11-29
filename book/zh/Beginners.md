@@ -586,7 +586,7 @@ auto &predictAdInfo = m_predictContext->m_predictInfos.m_adgroupId2AdMetaInfo[ad
 
 所以，在这个赋值过程中，虽然没有看到显式的解引用符号，但通过 std::unique_ptr 的类型转换和内部机制，实现了解引用的效果，使得最终 predictAdInfo 能够正确地引用到哈希映射中对应键值对所关联的 PredictAdInfo 对象。
 
-## 函数返回 std::unique_ptr<PredictContext>& 和 std::unique_ptr<PredictContext> 的区别？
+## 函数返回 std::unique_ptr<PredictContext> & 和 std::unique_ptr<PredictContext>  的区别？
 在C++中，函数返回类型 std::unique_ptr<PredictContext>& 和 std::unique_ptr<PredictContext> 的区别在于所有权的管理和使用场景不同。
 
 std::unique_ptr<PredictContext>&
