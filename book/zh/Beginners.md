@@ -587,6 +587,9 @@ auto &predictAdInfo = m_predictContext->m_predictInfos.m_adgroupId2AdMetaInfo[ad
 所以，在这个赋值过程中，虽然没有看到显式的解引用符号，但通过 std::unique_ptr 的类型转换和内部机制，实现了解引用的效果，使得最终 predictAdInfo 能够正确地引用到哈希映射中对应键值对所关联的 PredictAdInfo 对象。
 
 ## 函数返回 std::unique_ptr<PredictContext> & 和 std::unique_ptr<PredictContext>  的区别？
+```
+函数返回 std::unique_ptr<PredictContext> & 和 std::unique_ptr<PredictContext>  的区别？
+```
 在C++中，函数返回类型 std::unique_ptr<PredictContext>& 和 std::unique_ptr<PredictContext> 的区别在于所有权的管理和使用场景不同。
 
 std::unique_ptr<PredictContext>&
@@ -648,6 +651,9 @@ std::unique_ptr<PredictContext> 返回值，转移所有权。
 如果你需要函数创建一个新的对象并将其所有权转移给调用者，选择返回 std::unique_ptr<PredictContext>。
 
 ## 函数返回 std::unique_ptr<PredictContext> 需要复制对象吗？
+```
+函数返回 std::unique_ptr<PredictContext> 需要复制对象吗？
+```
 函数返回 std::unique_ptr<PredictContext> 不需要复制对象，因为 std::unique_ptr 是不可复制的（non-copyable），但它是可移动的（moveable）。当一个函数返回 std::unique_ptr 时，所有权通过移动语义从函数内部转移到调用者，而不是通过复制。
 
 ### 移动语义
