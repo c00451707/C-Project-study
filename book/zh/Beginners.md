@@ -586,4 +586,97 @@ auto &predictAdInfo = m_predictContext->m_predictInfos.m_adgroupId2AdMetaInfo[ad
 
 所以，在这个赋值过程中，虽然没有看到显式的解引用符号，但通过 std::unique_ptr 的类型转换和内部机制，实现了解引用的效果，使得最终 predictAdInfo 能够正确地引用到哈希映射中对应键值对所关联的 PredictAdInfo 对象。
 
+## 函数返回 std::unique_ptr<PredictContext>& 和 std::unique_ptr<PredictContext> 的区别？
+在C++中，函数返回类型 std::unique_ptr<PredictContext>& 和 std::unique_ptr<PredictContext> 的区别在于所有权的管理和使用场景不同。
 
+std::unique_ptr<PredictContext>&
+### 引用返回：
+
+返回的是一个指向 std::unique_ptr<PredictContext> 的引用。
+
+被引用的 unique_ptr 仍然由函数外部的调用者所有和管理。
+
+### 使用场景：
+
+适用于需要修改调用者传入的 unique_ptr 内容而不转移所有权的情况。
+
+可以直接操作外部传入的 unique_ptr，例如重置或指向不同的对象。
+### 示例代码
+```
+std::unique_ptr<PredictContext>& getPredictContext(std::unique_ptr<PredictContext>& context) {
+    // 修改 context 引用的对象
+    context.reset(new PredictContext());
+    return context;
+}
+```
+std::unique_ptr<PredictContext>
+### 值返回：
+
+返回的是一个新的 std::unique_ptr<PredictContext> 对象，函数内部所有权转移给调用者。
+
+调用者需要管理返回的 unique_ptr，包括销毁它。
+
+### 使用场景：
+
+适用于需要创建新对象并将所有权转移给调用者的情况。
+
+函数内部可以自由地创建和管理 unique_ptr 的生命周期，直到返回给调用者。
+
+### 示例代码：
+```
+std::unique_ptr<PredictContext> createPredictContext() {
+    // 创建新的 unique_ptr 对象并返回
+    return std::make_unique<PredictContext>();
+}
+```
+### 主要区别
+### 所有权管理：
+
+std::unique_ptr<PredictContext>& 返回引用，不转移所有权。
+
+std::unique_ptr<PredictContext> 返回值，转移所有权。
+
+### 使用场景：
+
+引用返回适合修改现有 unique_ptr 对象。
+
+值返回适合创建新对象并转移所有权。
+
+### 选择使用哪个
+如果你需要函数修改传入的 std::unique_ptr 并希望这些修改在函数外部可见，选择返回 std::unique_ptr<PredictContext>&。
+
+如果你需要函数创建一个新的对象并将其所有权转移给调用者，选择返回 std::unique_ptr<PredictContext>。
+
+## 函数返回 std::unique_ptr<PredictContext> 需要复制对象吗？
+函数返回 std::unique_ptr<PredictContext> 不需要复制对象，因为 std::unique_ptr 是不可复制的（non-copyable），但它是可移动的（moveable）。当一个函数返回 std::unique_ptr 时，所有权通过移动语义从函数内部转移到调用者，而不是通过复制。
+
+### 移动语义
+移动语义允许对象的资源（例如内存）从一个对象转移到另一个对象，而无需复制资源。std::unique_ptr 的移动构造函数和移动赋值运算符会转移指针的所有权，而不是复制指针所指向的对象
+
+### 示例
+以下是一个返回 std::unique_ptr<PredictContext> 的函数示例：
+```
+#include <memory>
+
+class PredictContext {
+    // 类定义
+};
+
+std::unique_ptr<PredictContext> createPredictContext() {
+    std::unique_ptr<PredictContext> context = std::make_unique<PredictContext>();
+    // 其他初始化代码
+    return context;  // 返回时通过移动语义转移所有权
+}
+
+int main() {
+    std::unique_ptr<PredictContext> myContext = createPredictContext();
+    // 现在 myContext 拥有 PredictContext 对象的所有权
+    return 0;
+}
+```
+在这个示例中，createPredictContext 函数创建了一个 std::unique_ptr<PredictContext> 对象，并在返回时将其所有权转移给调用者 myContext。没有发生任何复制操作，所有权通过移动语义进行转移。
+
+优点
+高效：避免了不必要的对象复制，提高了性能。
+
+明确的所有权：std::unique_ptr 具有独占所有权属性，确保同一时间内只有一个所有者。
