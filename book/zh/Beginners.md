@@ -686,3 +686,128 @@ int main() {
 高效：避免了不必要的对象复制，提高了性能。
 
 明确的所有权：std::unique_ptr 具有独占所有权属性，确保同一时间内只有一个所有者。
+
+
+## C++ 中引入右值引用的作用是啥，移动构造函数在什么场景下会被使用？请给出代码示例？
+在C++11中引入右值引用（rvalue references）的主要作用是优化资源管理和提升程序的性能。通过右值引用，可以实现“移动语义”（move semantics），从而避免不必要的复制操作。
+
+### 右值引用的作用
+移动语义：右值引用使得对象的资源可以被“移动”而不是复制，从而提升程序性能。
+
+完美转发：通过右值引用，可以实现函数模板的完美转发，避免了不必要的对象拷贝。
+
+### 移动构造函数的场景
+移动构造函数（move constructor）和移动赋值运算符（move assignment operator）在以下场景中会被使用：
+
+当一个临时对象被传递或返回时。
+
+在标准容器中重新分配元素时。
+
+在函数返回本地对象时，通过返回值优化（RVO）。
+
+### 示例代码
+```
+#include <iostream>
+#include <vector>
+#include <string>
+
+class MyClass {
+public:
+    MyClass(const std::string& name) : name(name), data(new int[1000]) {
+        std::cout << "Constructed " << name << std::endl;
+    }
+
+    // 拷贝构造函数
+    MyClass(const MyClass& other) : name(other.name), data(new int[1000]) {
+        std::memcpy(data, other.data, 1000 * sizeof(int));
+        std::cout << "Copied " << name << std::endl;
+    }
+
+    // 移动构造函数
+    MyClass(MyClass&& other) noexcept : name(std::move(other.name)), data(other.data) {
+        other.data = nullptr;
+        std::cout << "Moved " << name << std::endl;
+    }
+
+    // 拷贝赋值运算符
+    MyClass& operator=(const MyClass& other) {
+        if (this != &other) {
+            delete[] data;
+            name = other.name;
+            data = new int[1000];
+            std::memcpy(data, other.data, 1000 * sizeof(int));
+            std::cout << "Copy assigned " << name << std::endl;
+        }
+        return *this;
+    }
+
+    // 移动赋值运算符
+    MyClass& operator=(MyClass&& other) noexcept {
+        if (this != &other) {
+            delete[] data;
+            name = std::move(other.name);
+            data = other.data;
+            other.data = nullptr;
+            std::cout << "Move assigned " << name << std::endl;
+        }
+        return *this;
+    }
+
+    ~MyClass() {
+        delete[] data;
+        std::cout << "Destructed " << name << std::endl;
+    }
+
+private:
+    std::string name;
+    int* data;
+};
+
+int main() {
+    MyClass obj1("Object 1");
+
+    // 调用拷贝构造函数
+    MyClass obj2 = obj1;
+
+    // 调用拷贝赋值运算符
+    MyClass obj3("Object 3");
+    obj3 = obj1;
+
+    // 调用移动构造函数
+    MyClass obj4 = MyClass("Object 4");
+
+    // 调用移动赋值运算符
+    MyClass obj5("Object 5");
+    obj5 = MyClass("Temporary Object 5");
+
+    std::cout << "End of main" << std::endl;
+    return 0;
+}
+```
+
+### 输出
+```
+Constructed Object 1
+Copied Object 1
+Constructed Object 3
+Copy assigned Object 1
+Constructed Object 4
+Moved Object 4
+Destructed Object 4
+Constructed Object 5
+Moved Temporary Object 5
+Destructed Temporary Object 5
+Move assigned Temporary Object 5
+Destructed Object 1
+Destructed Object 1
+Destructed Temporary Object 5
+Destructed Object 3
+```
+
+### 相关知识点：
+
+![image](https://github.com/user-attachments/assets/20869a4d-3b92-4b0f-ad5d-be5e621aa3d9)
+![image](https://github.com/user-attachments/assets/aabed4c8-4d7c-4d0e-929a-3604b51dbf84)
+![image](https://github.com/user-attachments/assets/762a0ebb-4c86-46fb-80fd-755d259707a0)
+![image](https://github.com/user-attachments/assets/98c9ed34-b8a5-414f-b231-5492e5579c23)
+
