@@ -17,6 +17,70 @@ void：表示函数的返回类型是 void，即没有返回值。
 nullptr 是 C++11 引入的关键字，用于表示空指针。它比传统的 NULL 更加类型安全。
 综合起来，这段代码的意思是：定义一个名为 g_defaultGflagsExitFunc 的函数指针，它指向一个接受 int 参数且没有返回值的函数，并将这个指针初始化为 nullptr，表示当前没有指向任何实际的函数。
 
+## C++中，临时变量是一个指针，临时变量被释放了，那么指针指向的对象会被释放吗？
+### 基本原理
+在 C++ 中，临时变量是一种具有短暂生命周期的对象。当一个临时变量是指针时，情况比较复杂。如果这个指针只是指向一个对象，而临时变量（指针本身）被释放，那么指针指向的对象不一定会被释放。
+
+因为指针变量本身占用的内存（存储指针值的内存）和它所指向的对象占用的内存是不同的内存区域。释放指针变量只是回收了存储指针值的那一小块内存，而不是指针所指向的对象的内存。
+
+### 示例代码说明
+```
+#include <iostream>
+class MyClass {
+public:
+    MyClass() {
+        std::cout << "MyClass constructor called." << std::endl;
+    }
+    ~MyClass() {
+        std::cout << "MyClass destructor called." << std::endl;
+    }
+};
+MyClass* createTempObject() {
+    MyClass* temp = new MyClass();
+    return temp;
+}
+int main() {
+    MyClass* ptr = createTempObject();
+    // 此时临时变量（createTempObject函数中的temp指针）已经被销毁
+    // 但是ptr指向的MyClass对象没有被销毁，因为它是在堆上分配的内存
+    std::cout << "Before delete ptr" << std::endl;
+    delete ptr;
+    std::cout << "After delete ptr" << std::endl;
+    return 0;
+}
+```
+在这个例子中，createTempObject函数返回一个指向MyClass对象的指针。在函数返回后，函数内部的临时指针变量（temp）被销毁，但是它所指向的MyClass对象仍然存在于堆内存中，直到在main函数中通过delete ptr手动释放内存。
+
+### 特殊情况
+如果指针是指向栈上的对象，并且这个指针是临时变量，当临时变量（指针）生命周期结束后，栈上的对象也会被自动销毁。
+```
+#include <iostream>
+class StackObject {
+public:
+    StackObject() {
+        std::cout << "StackObject constructor called." << std::endl;
+    }
+    ~StackObject() {
+        std::cout << "StackObject destructor called." << std::endl;
+    }
+};
+StackObject createStackObject() {
+    StackObject obj;
+    StackObject* ptr = &obj;
+    return obj;
+}
+int main() {
+    StackObject result = createStackObject();
+    // 这里createStackObject函数中的ptr指针（临时变量）生命周期结束
+    // 同时它指向的栈上对象obj也因为函数结束而被销毁
+    return 0;
+}
+```
+在这个例子中，createStackObject函数返回一个StackObject对象。在函数内部，有一个指向栈上对象obj的指针ptr（作为临时变量）。当函数结束时，obj被销毁，因为它是在栈上分配的内存，其生命周期与函数的执行周期相关。
+
+
+
+
 ## 调用示例
 假设你有一个函数如下：
 ```
