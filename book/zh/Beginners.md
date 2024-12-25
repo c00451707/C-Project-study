@@ -878,3 +878,19 @@ Destructed Object 3
 ![image](https://github.com/user-attachments/assets/762a0ebb-4c86-46fb-80fd-755d259707a0)
 ![image](https://github.com/user-attachments/assets/98c9ed34-b8a5-414f-b231-5492e5579c23)
 
+
+## C++ decltype 知识点
+decltype 的用途是获得一个表达式的类型，结果可以跟类型一样使用。
+
+它有两个基本用法：
+
+decltype(变量名) 可以获得变量的精确类型。 
+
+decltype(表达式) （表达式不是变量名，但包括 decltype((变量名)) 的情况）可以获得表达式的引用类型；除非表达式的结果是个纯右值（prvalue），此时结果仍然是值类型。 
+### 示例
+如果我们有 int a;，那么： 
+```
+decltype(a) 会获得 int（因为 a 是 int）。
+decltype((a)) 会获得 int&（因为 a 是 lvalue）。 
+decltype(a + a) 会获得 int（因为 a + a 是 prvalue）。
+```
