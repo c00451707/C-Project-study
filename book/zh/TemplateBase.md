@@ -122,3 +122,102 @@ int main() {
    所以： integral_constant<int, 55>::value = 55； 所以最终结果等于55
  */
 ```
+
+
+
+## 模板编程示例2，map_reduce示例
+### map_reduce.h 代码
+```
+#include <vector>
+#include <type_traits>
+
+/**
+  * 用 decltype 来获得用 f 来调用 inputs 元素的类型（参考[第 8 讲]）；
+  * 用 decay_t 来把获得的类型变成一个普通的值类型；
+  * 缺省使用 vector 作为返回值的容器，但可以通过模板参数改为其他容器；
+  * 使用基于范围的 for 循环来遍历 inputs，对其类型不作其他要求（参考[第 7 讲]）；
+  * 存放结果的容器需要支持 push_back 成员函数（参考[第 4 讲]）。
+*/
+template <template <typename, typename> class OutContainer = std::vector, typename F, class R>
+auto fmap(F&& f, R&& inputs)
+{
+  typedef std::decay_t<decltype(f(*inputs.begin()))> result_type;
+  OutContainer<result_type, std::allocator<result_type>> result;
+  for (auto&& item : inputs) {
+    result.push_back(f(item));
+  }
+  return result;
+}
+
+int add_1(int x)
+{
+    return x + 1;
+}
+```
+### map_reduce.cc 代码
+```
+#include <iostream>
+#include <string>
+#include "map_reduce.h"
+
+int main() 
+{
+    std::vector<int> v{1, 2, 3, 4, 5};
+    auto result = fmap(add_1, v);
+    std::cout << "auto result = fmap(add_1, v) is: {";
+    for (size_t i = 0; i < result.size(); ++i) {
+        std::cout << " " << result[i] << " ";
+    }
+    std::cout << " }" << std::endl;
+    return 0;
+}
+
+/**
+ *  程序输出：
+ *  auto result = fmap(add_1, v) is: { 2  3  4  5  6  }
+ */
+```
+### 代码解释
+```
+/**
+ * 代码解释：
+ * 函数模板 fmap 解释：
+ * template <template <typename, typename> class OutContainer = std::vector, typename F, class R>：
+ *   这是一个函数模板，它有三个模板参数。
+ *   template <typename, typename> class OutContainer = std::vector 是一个模板模板参数，它本身是一个模板，并且默认使用 std::vector。这意味着 OutContainer 应该是一个容器模板，接受两个类型参数，例如 std::vector 接受元素类型和分配器类型。
+ *   typename F 是一个类型模板参数，代表可调用对象（函数、函数对象、lambda 等）的类型。
+ *   class R 是一个类型模板参数，代表输入容器的类型。
+ * 
+ * auto fmap(F&& f, R&& inputs)：
+ *   F&& f：这里使用了右值引用，目的是可以接受左值和右值。使用右值引用结合转发引用（universal reference）可以实现完美转发，允许 f 可以是任何可调用对象，无论它是左值还是右值，在函数内部调用时可以保持其原始的左值或右值属性，这在传递函数对象时可以避免不必要的复制和移动操作，提高性能。
+ *   R&& inputs：同理，这里的右值引用允许 inputs 可以是任何容器，无论它是左值还是右值，也能实现完美转发，避免不必要的复制和移动。
+ * 
+ * typedef std::decay_t<decltype(f(*inputs.begin()))> result_type;：
+ *   decltype(f(*inputs.begin())) 用于推导调用 f 对 inputs 容器的第一个元素进行操作后的结果类型。
+ *   std::decay_t 用于对推导出的类型进行退化处理，比如去除引用和 const 修饰符，得到一个纯类型，作为存储结果的容器元素类型。
+ * 
+ * OutContainer<result_type, std::allocator<result_type>> result;：
+ *   OutContainer 是一个容器模板，它使用 result_type 作为元素类型，std::allocator<result_type> 作为分配器。
+ *   std::allocator<result_type> 的作用是为 OutContainer 容器中的元素分配内存。std::allocator 是 C++ 标准库中的一个内存分配器，它负责为容器元素分配和释放内存。使用自定义的分配器可以对内存管理进行更多的控制，例如使用不同的内存池或实现更复杂的内存分配策略，但通常使用 std::allocator 可以满足大多数情况，它会调用全局的 new 和 delete 操作符来分配和释放内存。
+ * 
+ * for (auto&& item : inputs) { result.push_back(f(item)); }：
+ *   这是一个范围 for 循环，遍历 inputs 容器中的每个元素。
+ *   对每个元素调用 f 函数，并将结果使用 push_back 方法添加到 result 容器中。
+ * 
+ * return result;：返回存储结果的 OutContainer 容器。
+ * 
+ * 函数 add_1 解释：
+ *   int add_1(int x)：
+ *     这是一个简单的函数，接受一个整数 x 作为输入。
+ *     return x + 1;：返回 x 加 1 的结果。
+ * 
+ * 关于 std::vector 容器的模板参数：
+ *   std::vector 可以接收两个模板参数：
+ *     第一个参数是存储在 std::vector 中的元素类型，例如 std::vector<int> 中的 int。
+ *     第二个参数是分配器类型，默认为 std::allocator 的实例化，如 std::vector<int, std::allocator<int>>。使用分配器可以实现自定义的内存分配和释放策略，例如，如果想要使用自定义的内存分配策略，可以提供自定义的分配器，否则，使用默认的 std::allocator 会自动管理内存，通过 new 和 delete 进行元素存储和释放。
+ * 
+ * 综上所述，这段代码中的 fmap 函数是一个通用的映射函数，它接受一个可调用对象和一个容器作为输入，将可调用对象应用到容器的每个元素上，并将结果存储在一个新的容器中。使用右值引用是为了实现完美转发，提高性能和代码的通用性，std::allocator 是为容器元素分配内存的分配器，std::vector 接收两个模板参数以允许元素类型和分配器类型的自定义。
+ */
+```
+
+
