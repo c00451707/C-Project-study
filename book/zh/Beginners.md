@@ -894,3 +894,4 @@ decltype(a) 会获得 int（因为 a 是 int）。
 decltype((a)) 会获得 int&（因为 a 是 lvalue）。 
 decltype(a + a) 会获得 int（因为 a + a 是 prvalue）。
 ```
+![image](https://github.com/user-attachments/assets/ae1808d3-e421-469e-9931-a9a0e2037bf0)
