@@ -302,6 +302,8 @@ int main()
 ```
 
 ### 代码解释
+![image](https://github.com/user-attachments/assets/fd394c31-8809-4152-a5cd-6342b956feb0)
+
 ```
 /**
  * 1. SFINAE（Substitution Failure Is Not An Error，替换失败不是错误）机制回顾
