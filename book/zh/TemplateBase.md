@@ -237,4 +237,99 @@ int main()
  */
 ```
 
+## 模板编程示例3，检测一个类是否有一个名叫 reserve、参数类型为 size_t 的成员函数
 
+sinae.h 文件代码
+```
+#include <iostream>
+
+template <typename T>
+struct has_reserve
+{
+  struct good { char dummy; };
+  struct bad { char dummy[2]; };
+  
+  template <class U, void (U::*)(size_t)>
+  struct SFINAE {};
+  
+  template <class U>
+  static good reserve(SFINAE<U, &U::reserve>*);
+  
+  template <class U>
+  static bad reserve(...);
+  
+  static const bool value = sizeof(reserve<T>(nullptr)) == sizeof(good);
+};
+
+class test_class {
+  public:
+    void reserve(size_t t) {
+      std::cout << "size_t: " << t << std::endl;
+    }
+};
+```
+
+
+sfinae.cc 文件代码示例
+```
+#include <iostream>
+#include <string>
+#include "sfinae.h"
+
+int main() 
+{
+    has_reserve<test_class> is_has_reserve;
+    std::cout << "has_reserve<test_class> is_has_reserve::value is " << is_has_reserve.value << std::endl;
+    return 0;
+}
+/**
+ * 程序输出值：
+ * class test_class {
+ *   void reserve(size_t t) {
+ *     std::cout << "size_t: " << t << std::endl;
+ *     }
+ * };
+ *
+ * has_reserve<test_class> is_has_reserve::value is 0
+ *   class test_class {
+ *     public:    ### 区别
+ *       void reserve(size_t t) {
+ *         std::cout << "size_t: " << t << std::endl;
+ *       }
+ *   };
+ * has_reserve<test_class> is_has_reserve::value is 1
+ */
+```
+
+### 代码解释
+```
+/**
+ * 1. SFINAE（Substitution Failure Is Not An Error，替换失败不是错误）机制回顾
+ *   在 C++ 模板元编程中，SFINAE 是一个非常重要的概念。当编译器在实例化模板的过程中，如果进行模板参数替换导致了某种语法或者语义上的错误，但只要这个错误是在对模板参数进行替换过程中产生的，编译器就不会将其当作一个硬错误来处理，而是简单地忽略掉这个特定的模板实例化版本，继续去寻找其他可能有效的模板实例化版本。
+ * 
+ * 2. 关于 has_reserve 结构体中的模板函数和 SFINAE 应用
+ *   在 has_reserve 结构体里，有两个重载的 reserve 静态函数模板：
+ *     第一个 reserve 函数模板：
+ *       template <class U>
+ *       static good reserve(SFINAE<U, &U::reserve>*);
+ *     它的参数是一个指向 SFINAE<U, &U::reserve> 类型的指针。这里关键在于模板参数 U 以及 &U::reserve 这个表达式。这个函数模板实际上是期望 U 类型中存在名为 reserve 的成员函数，其返回类型为 void 并且接受一个 size_t 类型的参数，这样 &U::reserve 才能正确地获取到这个成员函数的地址用于构建 SFINAE 类型，并且能让这个函数模板参与重载决议。
+ * 
+ *     第二个 reserve 函数模板：
+ *       template <class U>
+ *       static bad reserve(...);
+ *     它是一个可变参数函数模板，本质上是一个兜底的版本，当其他更具体的重载版本无法匹配调用时，编译器就会尝试匹配这个版本。
+ * 
+ * 3. nullptr 参与匹配时的情况
+ *   如果 T 类型有符合条件的 reserve 成员函数：
+ *     也就是 T 类型中存在返回类型为 void、接受一个 size_t 类型参数的 reserve 成员函数时，对于表达式 &T::reserve 是合法有效的，这样 SFINAE<T, &T::reserve> 类型可以正常构建，此时 reserve<T>(nullptr) 就能匹配到第一个 reserve 函数模板（那个参数为 SFINAE<U, &U::reserve>* 的版本），因为 nullptr 可以作为一个空指针赋值给指向 SFINAE<T, &T::reserve> 类型的指针参数，符合这个函数模板对于参数的要求，于是编译器会选择这个更具体的重载版本，进而 sizeof(reserve<T>(nullptr)) 就相当于 sizeof(good)。
+ *   如果 T 类型没有符合条件的 reserve 成员函数：
+ *     当 T 中不存在满足上述条件的 reserve 成员函数时，&T::reserve 这个表达式在进行模板参数替换过程中就会出现错误（找不到对应的合适成员函数来获取其地址），根据 SFINAE 机制，包含这个导致替换失败的模板函数版本（也就是第一个 reserve 函数模板）就会被编译器忽略掉，此时编译器就只能选择那个可变参数的兜底版本，即第二个 reserve 函数模板，那么 sizeof(reserve<T>(nullptr)) 就相当于 sizeof(bad) 了。
+ * 
+ * 所以说，nullptr 与 SFINAE<U, &U::reserve>* 是否能匹配成功取决于 T 类型是否具备符合特定要求的 reserve 成员函数，这也是利用了 SFINAE 机制巧妙地通过重载决议和模板参数替换情况来判断类型特征（这里就是判断是否存在特定的 reserve 成员函数）的一种常见的 C++ 元编程技巧。
+ *  
+ * 在 C++ 中，使用 &U::reserve 这种形式是在取成员函数的地址。当 U 是一个类类型时，
+ * &U::reserve 是获取 U 类中名为 reserve 的成员函数的指针。这里 :: 是作用域解析运算符，
+ * 它用于明确指出 reserve 是属于 U 类的成员函数。
+ *
+ */
+```
